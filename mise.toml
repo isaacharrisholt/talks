@@ -1,0 +1,5 @@
+[tools]
+bun = "latest"
+
+[tasks.new]
+run = "bun create slidev"

@@ -1,0 +1,7 @@
+{
+  "name": "talks",
+  "private": true,
+  "workspaces": [
+    "your-backend-is-too-complicated"
+  ]
+}
