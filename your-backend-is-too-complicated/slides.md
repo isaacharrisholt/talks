@@ -20,6 +20,10 @@ defaults:
 
 _Isaac Harris-Holt, Lambda Days 2025_
 
+🦋 / @ihh.dev
+
+▶️ / IsaacHarrisHolt
+
 <!--
 - Welcome people
   - Last talk before keynote and beer, will try not to run too long
@@ -68,6 +72,18 @@ fn handle_message(message: Message(error), state: State(error)) {
 - So, who am I?
 - I'm the CTO at Rover, where we turn code like this into graphs like this and look
   for bad patterns to make sure you're not pushign bugs into production
+-->
+
+---
+layout: full
+class: p-0
+---
+
+![](/youtube-channel.png)
+
+<!--
+- And I'm also a YouTuber
+- I make programming content when I can find the time
 -->
 
 ---
