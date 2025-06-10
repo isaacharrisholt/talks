@@ -1,7 +1,7 @@
 ---
 theme: default
 title: Your backend is too complicated
-info: _Isaac Harris-Holt, Lambda Days 2025_
+info: Isaac Harris-Holt, Lambda Days 2025
 class: bg-[#ffaff3]
 transition: none
 mdc: true
@@ -18,7 +18,7 @@ defaults:
 
 # **Your backend<br>is too complicated**
 
-Isaac Harris-Holt
+_Isaac Harris-Holt, Lambda Days 2025_
 
 <!--
 - Welcome people
@@ -1149,15 +1149,6 @@ lifeguard.send(pool, ProcessBattle(mon_1, mon_2))
 
 ---
 class: bg-faff
----
-
-<!--
-- Obviously this was just a small example, but hopefully you can see how, as project requirements explode, using Gleam on the BEAM can prevent your code from doing the same
-- Because we like our backends nice and simple
--->
-
----
-class: bg-faff
 layout: cover
 ---
 
@@ -1175,8 +1166,14 @@ Gleam
 </div>
 </div>
 
-<img src="/gleam-lucy.svg" class="-rotate-10 absolute h-128 -bottom-24 -right-24">
+<img v-click src="/lucythicc.svg" class="absolute h-128 -bottom-12 -right-12">
 
 <!--
+- Obviously this was just a small example, but hopefully you can see how, as project requirements explode, using Gleam on the BEAM can prevent your code from doing the same
+- Because we like our backends
+
+[click]
+
+- nice and simple
 - Thank you
 -->
