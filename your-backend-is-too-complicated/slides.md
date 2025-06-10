@@ -27,6 +27,8 @@ _Isaac Harris-Holt, Lambda Days 2025_
 <!--
 - Welcome people
   - Last talk before keynote and beer, will try not to run too long
+- Today I'm going to be talking a little about how you can simplify your backend
+  development and infrastructure using my favourite programming language
 -->
 
 ---
@@ -71,7 +73,7 @@ fn handle_message(message: Message(error), state: State(error)) {
 <!--
 - So, who am I?
 - I'm the CTO at Rover, where we turn code like this into graphs like this and look
-  for bad patterns to make sure you're not pushign bugs into production
+  for bad patterns to make sure you're not pushing bugs into production
 -->
 
 ---
@@ -107,7 +109,7 @@ class: max-w-1/2 mx-auto
 ![Redis logo](/redis-logo.png)
 
 <!--
-- Suddenly, you've added Redis to your stack, along with a background processing library
+- From what I know of developers, you've added Redis to your stack, along with a background processing library
 -->
 
 ---
@@ -453,6 +455,21 @@ case interactable {
 ---
 
 ```gleam
+case do_db_query() {
+	[] -> Error(NotFound)
+	[record] -> Ok(record)
+	_ -> Error(UnexpectedResponse)
+}
+```
+
+<!--
+- You can also pattern match on lists or tuples, and exhaustiveness checking will be applied here, too
+-->
+
+---
+---
+
+```gleam
 type Result(a, b) {
 	Ok(a)
 	Error(b)
@@ -590,7 +607,7 @@ let receive_result = process.receive(subj, within: 100)
 ```
 
 <!--
-- In our case, we’re mostly transforming data from an existing API called the PokeAPI
+- Our API is mostly a transformation layer over an existing API called the PokeAPI
 - It follows REST standards reasonably strictly, so when you GET a Pokemon, rather than getting all the details about its moves,
 [click]
 you get links to them instead
@@ -616,9 +633,9 @@ let assert Ok(moves) =
 ```
 
 <!--
-- This code uses the a `parallel_map` function to quickly iterate over the list of moves in parallel
-- Exactly how it's implemented doesn't really matter right now
-- What's import is that Gleam will happily run all of these requests concurrently without breaking a sweat
+- This code uses a `parallel_map` function to quickly iterate over the list of moves in parallel
+- It works by creating a number of processes, though the exact details don't matter right now
+- What's important is that Gleam will happily run all of these requests concurrently without breaking a sweat
 
 [click]
 
@@ -661,7 +678,7 @@ type Cache(value) = table.Set(String, value)
 <!--
 - We’re going to use the `carpenter` package, which is just a Gleam wrapper around Erlang’s ETS bindings
 - A cache is just going to be a Carpenter table with string keys
-- Carpenter includes functions to create new sets, insert and remove items, etc.
+- Carpenter includes all functions the functions you'd expect to see, like functions to create new sets, insert and remove items, and so on
 -->
 
 ---
@@ -689,7 +706,7 @@ pub fn read_through(
 ```
 
 <!--
-- I’m going to add a `read_through` function that will try to
+- On top of that, I’m going to add a `read_through` function that will try to
 
 [click]
 
@@ -711,6 +728,7 @@ pub fn read_through(
 
 - This code works really well, but it’s so ugly
 - Just look how many levels of indentation we have here!
+- Talk about rightward drift
 - It’s time to make use of another fun Gleam trick
 -->
 
@@ -847,7 +865,7 @@ pub fn fetch_move(cache: Cache(Move), number: Int) {
 ````
 
 <!--
-- Now we can apply the `read_through` function to our `fetch_pokemon` and `fetch_move` functions
+- Now we can write a `fetch_pokemon` and `fetch_move` function using `read_through`
 
 [click]
 
@@ -870,7 +888,7 @@ class: bg-slide-dark
 <img src="/pokemon-battle.jpg" class="rounded-lg">
 
 <!--
-- Pokemon battles are pretty complicated, and are can be compute intensive to simulate
+- Pokemon battles are pretty complicated, and can be compute intensive to simulate
 - Caching the results of the battles is great, but what about the first time a particular pairing is requested?
 - Will that request not be slower?
 - Yes, obviously, but we can try and mitigate that by precomputing battle results in the background
@@ -902,7 +920,7 @@ type BattlerMsg {
 <!--
 - We start by defining a type for the different messages we might want to send to our background process
 - The `ProcessBattle` message is pretty self-explanatory, and we have a `Shutdown` message so we can safely stop the actor at any point
-- The BEAM can handle shutting down processes when your application stops, but we can use this to scale the number of battle managers down if our service is under high load
+- Although the BEAM can handle shutting down processes when your application stops, we can use this to scale down the number of battlers if our service is under high load
 -->
 
 ---
@@ -919,7 +937,8 @@ type BattlerState {
 ```
 
 <!--
-- This type represents our internal state, which holds the handles for our Pokemon cache and a new battle cache that stores the name of the winning Pokemon for a battle, as well as the actor’s own subject so it can send messages to itself
+- This type represents our internal state, which holds the actor's own subject so it can send messages to itself
+- It also has the handles for our Pokemon cache and a new battle cache that stores the name of the winning Pokemon for a battle
 -->
 
 ---
@@ -939,8 +958,8 @@ fn handle_message(
 				pokemon_1.name <> ":" <> pokemon_2.name,
 				winner.name,
 			)
-			let new_pokemon_1 = cache.get_random_key(state.pokemon_cache)
-			let new_pokemon_2 = cache.get_random_key(state.pokemon_cache)
+			let new_pokemon_1 = cache.get_random(state.pokemon_cache)
+			let new_pokemon_2 = cache.get_random(state.pokemon_cache)
 			process.send_after(
 				state.self, ProcessBattle(new_pokemon_1, new_pokemon_2), 3000,
 			)
@@ -951,20 +970,21 @@ fn handle_message(
 ```
 
 <!--
-- We also need a function to handle incoming messages
+- Now we get to the meat of things
+- We need a function to tell our actor how to handle incoming messages
 
 [click]
 
-- When it receives a ProcessBattle message
+- So, when our actor receives a ProcessBattle message
 
 [click]
 
-- the actor battles the two Pokemon, storing the winner in the cache
+- it battles the two Pokemon, storing the winner in the cache
 
 [click]
 
 - before scheduling a new battle between two random Pokemon from the cache
-- This is done with a bit of a delay, because we don't need the battlers to be busy all the time
+- This is done with a 3 second delay, because we don't need the battlers to be busy all the time
 - But, even if they were, the BEAM makes sure a single process can't pin the CPU and block other processes from executing
 -->
 
@@ -974,7 +994,7 @@ fn handle_message(
 ```gleam
 import gleam/otp/actor
 
-pub fn start_battle_manager(
+pub fn start_battler(
 	pokemon_cache: Cache(Pokemon),
 	battle_cache: Cache(String),
 ) {
@@ -1036,8 +1056,8 @@ let assert Ok(conn) = tcp.connect("localhost", 8080)
 
 <!--
 - Sometimes, though, something goes so horribly wrong that there’s no way to fail gracefully
-- In this case, we want to crash
-- In Gleam, one of the ways we can crash is by using this panic keyword, or the `let assert` syntax we saw earlier
+- In that case, we want to crash
+- In Gleam, one of the ways we can crash is by using this `panic` keyword, or the `let assert` syntax we saw earlier
 -->
 
 ---
@@ -1119,7 +1139,7 @@ class: bg-slide-dark
 
 <!--
 - Most BEAM applications are actually one big supervision tree
-- Layers of supervisors all supervising a number of child processes, which can either be worker children or other supervisors
+- Layers upon layers of supervisors all looking after a number of child processes, which can either be worker children or other supervisors
 -->
 
 ---
