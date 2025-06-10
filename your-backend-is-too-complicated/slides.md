@@ -113,7 +113,9 @@ class: bg-slide-dark
 - Great, I have one last requirement
 - This API must *never* crash
 - Damn
+
 [click]
+
 - Time to rewrite it in Rust, I guess
 -->
 
@@ -126,7 +128,9 @@ class: bg-[#ffaff3]
 <!--
 - Well, there’s a better way
 - And that way, is a type-safe, simplicity-first programming language expertly baked for massive concurrency, high availability and effortless scaling
+
 [click]
+
 - I am, of course, talking about Gleam
 -->
 
@@ -214,7 +218,9 @@ fn calculate_total_cost(
 
 <!--
 - And it’s type safe, so the compiler will do what it can to make sure your programs are correct
+
 [click]
+
 - Though type annotations can usually be dropped without hampering that crucial type safety
 -->
 
@@ -236,9 +242,13 @@ class: bg-slide-dark
 <!--
 - Importantly, Gleam is for systems that scale
 - Gleam doesn’t have its own runtime
+
 [click]
+
 - Gleam code can compile to JavaScript...
+
 [click]
+
 - ...but it’s most often compiled to Erlang to run on the BEAM virtual machine
 - The BEAM is an incredible piece of technology designed to power global systems like comms networks, and Gleam can take full advantage of that to go planet scale
 -->
@@ -297,9 +307,13 @@ layout: two-cols
 
 <!--
 - Modern languages often have a static type system that lies somewhere on a scale of
+
 [click]
+
 - “type suggestions that are there but don’t really do anything”
+
 [click]
+
 - to “Turing-complete”
 -->
 
@@ -372,7 +386,9 @@ type Interactable {
 
 <!--
 - Some types have multiple constructors, like an interactable object we might see in a Pokemon game
+
 [click]
+
 - And it’s possible for constructors to take no arguments
 -->
 
@@ -558,7 +574,7 @@ let receive_result = process.receive(subj, within: 100)
 ```
 
 <!--
-- In our case, we’re getting data from an existing API called the PokeAPI
+- In our case, we’re mostly transforming data from an existing API called the PokeAPI
 - It follows REST standards reasonably strictly, so when you GET a Pokemon, rather than getting all the details about its moves,
 [click]
 you get links to them instead
@@ -585,7 +601,8 @@ let assert Ok(moves) =
 
 <!--
 - This code uses the a `parallel_map` function to quickly iterate over the list of moves in parallel
-- Gleam will happily run all of these requests concurrently without breaking a sweat
+- Exactly how it's implemented doesn't really matter right now
+- What's import is that Gleam will happily run all of these requests concurrently without breaking a sweat
 
 [click]
 
@@ -622,7 +639,7 @@ class: bg-slide-dark
 ```gleam
 import carpenter/table
 
-type Cache(value) = table,Set(String, value)
+type Cache(value) = table.Set(String, value)
 ```
 
 <!--
@@ -718,11 +735,11 @@ operations
 ````
 
 <!--
-- It’s just a bit of syntactic sugar, but what it allows us to do
+- It’s just a bit of syntactic sugar, but what it allows us to do is flatten out our code when we have a function whose last argument is a callback
 
 [click]
 
-- is flatten out our code when we have a function whose last argument is a callback
+- Like this
 -->
 
 ---
@@ -853,7 +870,7 @@ layout: cover
 <!--
 - In Gleam, we can create long running background processes called actors
 - These maintain their own internal state and can process incoming messages to update that state
-- We’ll use this to create a battler
+- We’ll use this to create a battler that runs battles in the background, storing the results in a cache
 -->
 
 ---
@@ -931,12 +948,16 @@ fn handle_message(
 [click]
 
 - before scheduling a new battle between two random Pokemon from the cache
+- This is done with a bit of a delay, because we don't need the battlers to be busy all the time
+- But, even if they were, the BEAM makes sure a single process can't pin the CPU and block other processes from executing
 -->
 
 ---
 ---
 
 ```gleam
+import gleam/otp/actor
+
 pub fn start_battle_manager(
 	pokemon_cache: Cache(Pokemon),
 	battle_cache: Cache(String),
@@ -950,8 +971,10 @@ pub fn start_battle_manager(
 <!--
 - Finally, we can use the actor module from gleam/otp to start our actor
 - And we can start as many of these as we like depending on how many battles we want to be precomputing at once
-- Independent processes receiving and responding to messages sounds a lot like microservices, but inside your application, and they spin up and down pretty much instantly
+
+- Now, independent processes receiving and responding to messages sounds a lot like microservices, but inside your application, and they spin up and down pretty much instantly
 - Neat, huh?
+- Maybe you don't really need all that Terraform
 -->
 
 ---
@@ -1079,7 +1102,6 @@ class: bg-slide-dark
 <img src="/erlang-supervision-tree.png" class="w-full rounded-lg place-self-center my-auto">
 
 <!--
-- A supervisor is a process that, well, supervises other processes, restarting them if they fail
 - Most BEAM applications are actually one big supervision tree
 - Layers of supervisors all supervising a number of child processes, which can either be worker children or other supervisors
 -->
@@ -1106,12 +1128,12 @@ lifeguard.send(pool, ProcessBattle(mon_1, mon_2))
 ---
 
 <style>
-.slidev-vclick-target {
+.k8s-logo {
   transition: all 25000ms ease;
 }
 </style>
 
-<img v-click src="/kubernetes-logo.png" class="h-80">
+<img v-click src="/kubernetes-logo.png" class="h-80 k8s-logo">
 
 <!--
 - Once again,
