@@ -1121,7 +1121,7 @@ lifeguard.send(pool, ProcessBattle(mon_1, mon_2))
 
 <!--
 - Practically, we can accomplish this in Gleam really easily using the Lifeguard package, which allows us to create a worker pool and broadcast messages to all workers if we need to
-- And if any of our workers crash, Lifeguard will take care of restarting them and tracking the  subjects for the active processes internally
+- And if any of our workers crash, Lifeguard will take care of restarting them and tracking the subjects for the active processes internally
 -->
 
 ---
@@ -1166,14 +1166,10 @@ Gleam
 </div>
 </div>
 
-<img v-click src="/lucythicc.svg" class="absolute h-128 -bottom-12 -right-12">
+<img src="/gleam-lucy-happy.svg" class="absolute h-128 -bottom-12 -right-12 -rotate-10">
 
 <!--
 - Obviously this was just a small example, but hopefully you can see how, as project requirements explode, using Gleam on the BEAM can prevent your code from doing the same
-- Because we like our backends
-
-[click]
-
-- nice and simple
+- Because we like our backends nice and simple
 - Thank you
 -->
