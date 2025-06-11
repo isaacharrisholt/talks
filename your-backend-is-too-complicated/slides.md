@@ -203,6 +203,7 @@ as assert <span class="opacity-50">auto</span> case const<br><br><span class="op
 
 <!--
 - ...only 15 of which are actually in use!
+- So, not really much for you or your colleagues to learn
 -->
 
 ---
@@ -239,7 +240,7 @@ fn calculate_total_cost(
 
 [click]
 
-- Though type annotations can usually be dropped without hampering that crucial type safety
+- Though types can usually be inferred by the compiler, so type annotations can be dropped
 -->
 
 ---
@@ -259,7 +260,7 @@ class: bg-slide-dark
 
 <!--
 - Importantly, Gleam is for systems that scale
-- Gleam doesn’t have its own runtime
+- Now, Gleam doesn’t have its own runtime
 
 [click]
 
@@ -267,7 +268,7 @@ class: bg-slide-dark
 
 [click]
 
-- ...but it’s most often compiled to Erlang to run on the BEAM virtual machine
+- ...but, on the backend, it’s most often compiled to Erlang to run on the BEAM virtual machine
 - The BEAM is an incredible piece of technology designed to power global systems like comms networks, and Gleam can take full advantage of that to go planet scale
 -->
 
@@ -448,6 +449,32 @@ case interactable {
 
 <!--
 - If you want to know which constructor was used to construct a value, you’d use pattern matching like this
+-->
+
+---
+---
+
+```text
+error: Inexhaustive patterns
+   ┌─ /Users/isaac/repos/ld2025/src/ld2025.gleam:46:3
+   │
+46 │ ╭   case interactable {
+47 │ │     Character(name, dialogue) -> handle_character_interaction(name, dialogue)
+48 │ │     TrashCan(item) -> add_item_to_inventory(item)
+49 │ │     MoveableRock -> push_rock()
+50 │ │     // Tree -> bonk()
+51 │ │   }
+   │ ╰───^
+
+This case expression does not have a pattern for all possible values. If it
+is run on one of the values without a pattern then it will crash.
+
+The missing patterns are:
+
+    Tree
+```
+
+<!--
 - And what’s really nice is that the compiler will scream at you if you miss any patterns
 -->
 
@@ -477,7 +504,7 @@ type Result(a, b) {
 ```
 
 <!--
-- Gleam also has a built-in record type called Result, which is a generic type defined like this
+- Gleam has a built-in record type called `Result`, which is a generic type defined like this
 - And this is used for error handling throughout Gleam code, rather than throwing exceptions, so we know potential error sites at a glance
 -->
 
@@ -529,6 +556,7 @@ class: bg-slide-dark
 - ...concurrency
 - As I mentioned earlier, Gleam on the backend typically runs on the BEAM virtual machine
 - Concurrency on the BEAM probably works a little differently to what you’re used to
+- (if you're an Elixir dev, please bear with me for, like, 2 slides)
 -->
 
 ---
@@ -607,15 +635,17 @@ let receive_result = process.receive(subj, within: 100)
 ```
 
 <!--
-- Our API is mostly a transformation layer over an existing API called the PokeAPI
-- It follows REST standards reasonably strictly, so when you GET a Pokemon, rather than getting all the details about its moves,
+- The fictional API we're building is mostly a transformation layer over an existing API called the PokeAPI
+- It follows REST standards reasonably strictly, so when you GET a Pokemon, rather than getting all the details about its moves
+
 [click]
-you get links to them instead
+
+- you get links to them instead
 
 [click]
 
 - We want more details about the move, like its type and base power, so we’re going to have to make an additional request per move returned
-- Rather than waiting for each one to complete, we want to do that concurrently!
+- Rather than waiting for each one to complete in sequence, we want to do that concurrently!
 -->
 
 ---
@@ -944,7 +974,7 @@ type BattlerState {
 ---
 ---
 
-```gleam {all|7|8-13|14-18}
+```gleam {all|5,7|8-13|14-18}
 fn handle_message(
 	state: BattlerState,
 	message: BattlerMsg,
@@ -971,6 +1001,7 @@ fn handle_message(
 
 <!--
 - Now we get to the meat of things
+- I couldn't even fit the rounded corners on the slide
 - We need a function to tell our actor how to handle incoming messages
 
 [click]
@@ -979,11 +1010,11 @@ fn handle_message(
 
 [click]
 
-- it battles the two Pokemon, storing the winner in the cache
+- it battles the two Pokemon, storing the winner in the cache.
 
 [click]
 
-- before scheduling a new battle between two random Pokemon from the cache
+- Finally, it schedules a new battle between two random Pokemon from the cache
 - This is done with a 3 second delay, because we don't need the battlers to be busy all the time
 - But, even if they were, the BEAM makes sure a single process can't pin the CPU and block other processes from executing
 -->
@@ -1043,7 +1074,7 @@ type Result(a, b) {
 ---
 ---
 
-```gleam
+```gleam {all|2}
 case system.get_unix_timestamp() {
   time if time < 0 -> panic as "Time went backwards 😱"
   time -> time
@@ -1057,6 +1088,9 @@ let assert Ok(conn) = tcp.connect("localhost", 8080)
 <!--
 - Sometimes, though, something goes so horribly wrong that there’s no way to fail gracefully
 - In that case, we want to crash
+
+[click]
+
 - In Gleam, one of the ways we can crash is by using this `panic` keyword, or the `let assert` syntax we saw earlier
 -->
 
