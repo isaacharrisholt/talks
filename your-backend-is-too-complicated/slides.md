@@ -1040,8 +1040,8 @@ pub fn start_battler(
 - And we can start as many of these as we like depending on how many battles we want to be precomputing at once
 
 - Now, independent processes receiving and responding to messages sounds a lot like microservices, but inside your application, and they spin up and down pretty much instantly
-- Neat, huh?
-- Maybe you don't really need all that Terraform
+- Makes you think, huh?
+- Perhaps you don't need three hundred lines of Terraform to deploy your CRUD app...
 -->
 
 ---
