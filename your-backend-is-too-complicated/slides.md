@@ -368,7 +368,7 @@ let moves: List(Move) = [...]
 
 ```gleam
 type Pokemon {
-	Pokemon(name: String, type_: PokemonType)
+  Pokemon(name: String, type_: PokemonType)
 }
 ```
 
@@ -440,10 +440,10 @@ type Interactable {
 
 ```gleam
 case interactable {
-	Character(name, dialogue) -> handle_character_interaction(name, dialogue)
-	TrashCan(item) -> add_item_to_inventory(item)
-	MoveableRock -> push_rock()
-	Tree -> bonk()
+  Character(name, dialogue) -> handle_character_interaction(name, dialogue)
+  TrashCan(item) -> add_item_to_inventory(item)
+  MoveableRock -> push_rock()
+  Tree -> bonk()
 }
 ```
 
@@ -483,9 +483,9 @@ The missing patterns are:
 
 ```gleam
 case do_db_query() {
-	[] -> Error(NotFound)
-	[record] -> Ok(record)
-	_ -> Error(UnexpectedResponse)
+  [record] -> Ok(record)
+  [] -> Error(NotFound)
+  _ -> Error(UnexpectedResponse)
 }
 ```
 
@@ -498,8 +498,8 @@ case do_db_query() {
 
 ```gleam
 type Result(a, b) {
-	Ok(a)
-	Error(b)
+  Ok(a)
+  Error(b)
 }
 ```
 
@@ -513,21 +513,21 @@ type Result(a, b) {
 
 ```gleam
 type Pokemon {
-	Pokemon(
-		name: String,
-		types: PokemonTypes,
-		moves: List(Move),
-		stats: Stats,
-	)
+  Pokemon(
+    name: String,
+    types: PokemonTypes,
+    moves: List(Move),
+    stats: Stats,
+  )
 }
 ```
 
 ```json
 {
-	"name": "Murkrow",
-	"types": ["dark", "flying"],
-	"moves": [{...}, {...}],
-	"stats": {"hp": 60, ...}
+  "name": "Murkrow",
+  "types": ["dark", "flying"],
+  "moves": [{...}, {...}],
+  "stats": {"hp": 60, ...}
 }
 ```
 
@@ -589,14 +589,14 @@ class: bg-slide-dark
 ````md magic-move
 ```gleam
 process.spawn(fn() {
-	do_some_work()
+  do_some_work()
 })
 ```
 
 ```gleam
 let subj = process.new_subject()
 process.spawn(fn() {
-	process.send(subj, "Hello, Kraków!")
+  process.send(subj, "Hello, Kraków!")
 })
 
 let receive_result = process.receive(subj, within: 100)
@@ -621,22 +621,22 @@ let receive_result = process.receive(subj, within: 100)
 
 ```json {all|7|all}
 {
-	"name": "ditto",
-	"moves": [
-		{
-			"move": {
-				"name": "transform",
-				"url": "https://pokeapi.co/api/v2/move/144/"
-			}
-		}
-	],
-	...
+  "name": "ditto",
+  "moves": [
+    {
+      "move": {
+        "name": "transform",
+        "url": "https://pokeapi.co/api/v2/move/144/"
+      }
+    }
+  ],
+  ...
 }
 ```
 
 <!--
 - The fictional API we're building is mostly a transformation layer over an existing API called the PokeAPI
-- It follows REST standards reasonably strictly, so when you GET a Pokemon, rather than getting all the details about its moves
+- The PokeAPI follows REST standards reasonably strictly, so when you GET a Pokemon, rather than getting all the details about its moves
 
 [click]
 
@@ -655,11 +655,11 @@ let receive_result = process.receive(subj, within: 100)
 let assert Ok(api_pokemon) = fetch_pokemon("zorua")
 
 let assert Ok(moves) =
-	api_pokemon.moves
-	|> parallel_map(
-		fetch_move,
-		1000,
-	)
+  api_pokemon.moves
+  |> parallel_map(
+    fetch_move,
+    1000,
+  )
 ```
 
 <!--
@@ -716,22 +716,22 @@ type Cache(value) = table.Set(String, value)
 
 ```gleam {all|6|8-16|9|10-11|all}
 pub fn read_through(
-	cache: Cache(value),
-	key: String,
-	getter: fn() -> Result(value, error),
+  cache: Cache(value),
+  key: String,
+  getter: fn() -> Result(value, error),
 ) -> Result(value, error) {
-	case table.lookup(key) {
-		[value, ..] -> Ok(value)
-		[] -> {
-			case getter() {
-				Ok(value) -> {
-					insert(cache, key, value)
-					Ok(value)
-				}
-				Error(error) -> Error(error)
-			}
-		}
-	}
+  case table.lookup(key) {
+    [value, ..] -> Ok(value)
+    [] -> {
+      case getter() {
+        Ok(value) -> {
+          insert(cache, key, value)
+          Ok(value)
+        }
+        Error(error) -> Error(error)
+      }
+    }
+  }
 }
 ```
 
@@ -812,35 +812,35 @@ operations
 ````md magic-move
 ```gleam
 pub fn read_through(
-	cache: Cache(value),
-	key: String,
-	getter: fn() -> Result(value, error),
+  cache: Cache(value),
+  key: String,
+  getter: fn() -> Result(value, error),
 ) -> Result(value, error) {
-	case table.lookup(key) {
-		[value, ..] -> Ok(value)
-		[] -> {
-			case getter() {
-				Ok(value) -> {
-					insert(cache, key, value)
-					Ok(value)
-				}
-				Error(error) -> Error(error)
-			}
-		}
-	}
+  case table.lookup(key) {
+    [value, ..] -> Ok(value)
+    [] -> {
+      case getter() {
+        Ok(value) -> {
+          insert(cache, key, value)
+          Ok(value)
+        }
+        Error(error) -> Error(error)
+      }
+    }
+  }
 }
 ```
 
 ```gleam
 pub fn read_through(
-	cache: Cache(value),
-	key: String,
-	getter: fn() -> Result(value, error),
+  cache: Cache(value),
+  key: String,
+  getter: fn() -> Result(value, error),
 ) -> Result(value, error) {
-	use _ <- result.try_recover(table.lookup(key) |> list.first)
-	use value <- result.try(getter())
-	insert(cache, key, value)
-	Ok(value)
+  use _ <- result.try_recover(table.lookup(key) |> list.first)
+  use value <- result.try(getter())
+  insert(cache, key, value)
+  Ok(value)
 }
 ```
 ````
@@ -861,35 +861,35 @@ pub fn read_through(
 ````md magic-move
 ```gleam
 pub fn fetch_pokemon(cache: Cache(ApiPokemon), name: String) {
-	cache.read_through(cache, name, fn() {
-		do_pokeapi_request("/api/v2/pokemon/" <> name)
-		|> decode_pokemon
-	})
+  cache.read_through(cache, name, fn() {
+    do_pokeapi_request("/api/v2/pokemon/" <> name)
+    |> decode_pokemon
+  })
 }
 
 pub fn fetch_move(cache: Cache(Move), number: Int) {
-	let move_number = int.to_string(number)
-	cache.read_through(cache, move_number, fn() {
-		do_pokeapi_request("/api/v2/move/" <> move_number)
-		|> decode_move
-	})
+  let move_number = int.to_string(number)
+  cache.read_through(cache, move_number, fn() {
+    do_pokeapi_request("/api/v2/move/" <> move_number)
+    |> decode_move
+  })
 }
 ```
 
 ```gleam
 pub fn fetch_pokemon(cache: Cache(ApiPokemon), name: String) {
-	use <- cache.read_through(cache, name)
+  use <- cache.read_through(cache, name)
 
-	do_pokeapi_request("/api/v2/pokemon/" <> name)
-	|> decode_pokemon
+  do_pokeapi_request("/api/v2/pokemon/" <> name)
+  |> decode_pokemon
 }
 
 pub fn fetch_move(cache: Cache(Move), number: Int) {
-	let move_number = int.to_string(number)
-	use <- cache.read_through(cache, move_number)
+  let move_number = int.to_string(number)
+  use <- cache.read_through(cache, move_number)
 
-	do_pokeapi_request("/api/v2/move/" <> move_number)
-	|> decode_move
+  do_pokeapi_request("/api/v2/move/" <> move_number)
+  |> decode_move
 }
 ```
 ````
@@ -942,8 +942,8 @@ layout: cover
 
 ```gleam
 type BattlerMsg {
-	ProcessBattle(pokemon_1: Pokemon, pokemon_2: Pokemon)
-	Shutdown
+  ProcessBattle(pokemon_1: Pokemon, pokemon_2: Pokemon)
+  Shutdown
 }
 ```
 
@@ -958,11 +958,11 @@ type BattlerMsg {
 
 ```gleam
 type BattlerState {
-	BattlerState(
-		self: Subject(BattlerMsg),
-		pokemon_cache: Cache(Pokemon),
-		battle_cache: Cache(String),
-	)
+  BattlerState(
+    self: Subject(BattlerMsg),
+    pokemon_cache: Cache(Pokemon),
+    battle_cache: Cache(String),
+  )
 }
 ```
 
@@ -974,30 +974,31 @@ type BattlerState {
 ---
 ---
 
-```gleam {all|5,7|8-9|10-14}
+```gleam {all|5,7|8-9|10-16}
 fn handle_message(
-	state: BattlerState,
-	message: BattlerMsg,
+  state: BattlerState,
+  message: BattlerMsg,
 ) {
-	case message {
-		Shutdown -> actor.stop()
-		ProcessBattle(pokemon_1, pokemon_2) -> {
-			let winner = battle(pokemon_1, pokemon_2)
-			cache_battle(state.battle_cache, pokemon_1, pokemon_2, winner)
-			let new_pokemon_1 = cache.get_random(state.pokemon_cache)
-			let new_pokemon_2 = cache.get_random(state.pokemon_cache)
-			process.send_after(
-				state.self, ProcessBattle(new_pokemon_1, new_pokemon_2), 3000,
-			)
-			actor.continue(state)
-		}
-	}
+  case message {
+    Shutdown -> actor.stop()
+    ProcessBattle(pokemon_1, pokemon_2) -> {
+      let winner = battle(pokemon_1, pokemon_2)
+      cache_battle(state.battle_cache, pokemon_1, pokemon_2, winner)
+      let new_pokemon_1 = cache.get_random(state.pokemon_cache)
+      let new_pokemon_2 = cache.get_random(state.pokemon_cache)
+      process.send_after(
+        state.self,
+        ProcessBattle(new_pokemon_1, new_pokemon_2),
+        3000,
+      )
+      actor.continue(state)
+    }
+  }
 }
 ```
 
 <!--
 - Now we get to the meat of things
-- I couldn't even fit the rounded corners on the slide
 - We need a function to tell our actor how to handle incoming messages
 
 [click]
@@ -1022,12 +1023,12 @@ fn handle_message(
 import gleam/otp/actor
 
 pub fn start_battler(
-	pokemon_cache: Cache(Pokemon),
-	battle_cache: Cache(String),
+  pokemon_cache: Cache(Pokemon),
+  battle_cache: Cache(String),
 ) {
-	actor.new_with_initialiser(1000, create_initialiser(pokemon_cache, battle_cache))
-	|> actor.on_message(handle_message)
-	|> actor.start
+  actor.new_with_initialiser(1000, create_initialiser(pokemon_cache, battle_cache))
+  |> actor.on_message(handle_message)
+  |> actor.start
 }
 ```
 
@@ -1057,8 +1058,8 @@ layout: cover
 
 ```gleam
 type Result(a, b) {
-	Ok(a)
-	Error(b)
+  Ok(a)
+  Error(b)
 }
 ```
 
@@ -1177,9 +1178,9 @@ class: bg-slide-dark
 
 ```gleam
 let assert Ok(pool) =
-	lifeguard.new(create_pool_spec(pokemon_cache, battle_cache))
-	|> lifeguard.with_size(5)
-	|> lifeguard.start(1000)
+  lifeguard.new(create_pool_spec(pokemon_cache, battle_cache))
+  |> lifeguard.with_size(5)
+  |> lifeguard.start(1000)
 
 // Send a particular battle to a worker
 lifeguard.send(pool, ProcessBattle(mon_1, mon_2))
