@@ -397,8 +397,8 @@ type Interactable {
 type Interactable {
   Character(name: String, dialogue: List(String))
   TrashCan(item: Item)
-  Tree
   MoveableRock
+  Tree
 }
 ```
 ````
@@ -418,8 +418,8 @@ type Interactable {
 type Interactable {
   Character(name: String, dialogue: List(String))
   TrashCan(item: Item)
-  Tree
   MoveableRock
+  Tree
 }
 ```
 
@@ -974,7 +974,7 @@ type BattlerState {
 ---
 ---
 
-```gleam {all|5,7|8-13|14-18}
+```gleam {all|5,7|8-9|10-14}
 fn handle_message(
 	state: BattlerState,
 	message: BattlerMsg,
@@ -983,11 +983,7 @@ fn handle_message(
 		Shutdown -> actor.stop()
 		ProcessBattle(pokemon_1, pokemon_2) -> {
 			let winner = battle(pokemon_1, pokemon_2)
-			insert(
-				state.battle_cache,
-				pokemon_1.name <> ":" <> pokemon_2.name,
-				winner.name,
-			)
+			cache_battle(state.battle_cache, pokemon_1, pokemon_2, winner)
 			let new_pokemon_1 = cache.get_random(state.pokemon_cache)
 			let new_pokemon_2 = cache.get_random(state.pokemon_cache)
 			process.send_after(
